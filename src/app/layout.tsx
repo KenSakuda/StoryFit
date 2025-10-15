@@ -1,11 +1,10 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "行動変容促進アプリ『StoryFit』",
-  description: "行動変容を促進するためのヘルスケアアプリ『StoryFit』です",
-  viewport:
-    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  title: "StoryFit",
+  description: "行動変容を促進するヘルスケアアプリです",
 };
 
 export default function RootLayout({
@@ -16,16 +15,36 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        <header className="header">
-          <div className="logo">StoryFit</div>
-          <nav className="nav">
-            <button>今日</button>
-            <button>行動</button>
-            <button>目標</button>
-            <button>設定</button>
+        {/* 画面全体ラッパ：下部ナビ分の余白を確保 */}
+        <div className="appShell">
+          {/* 上部ヘッダー（必要最低限。ロゴ等があればここに） */}
+          <header className="topHeader" aria-label="アプリヘッダー">
+            <div className="brand">StoryFit</div>
+          </header>
+
+          {/* メイン */}
+          <main className="mainArea">{children}</main>
+
+          {/* ----- 下部固定タブバー ----- */}
+          <nav className="bottomNav" aria-label="メインナビゲーション">
+            <Link href="/" className="tabItem" aria-label="今日">
+              <span className="tabIcon">📅</span>
+              <span className="tabLabel">今日</span>
+            </Link>
+            <Link href="/actions" className="tabItem" aria-label="行動">
+              <span className="tabIcon">⚡️</span>
+              <span className="tabLabel">行動</span>
+            </Link>
+            <Link href="/goals" className="tabItem" aria-label="目標">
+              <span className="tabIcon">🎯</span>
+              <span className="tabLabel">目標</span>
+            </Link>
+            <Link href="/settings" className="tabItem" aria-label="設定">
+              <span className="tabIcon">⚙️</span>
+              <span className="tabLabel">設定</span>
+            </Link>
           </nav>
-        </header>
-        <main className="main">{children}</main>
+        </div>
       </body>
     </html>
   );
