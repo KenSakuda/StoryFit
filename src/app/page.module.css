@@ -3,11 +3,77 @@
 .dashboard {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding-bottom: 12px; /* 下部タブに重ならないようglobalsで全体余白も確保済み */
+  gap: 18px;
+  padding-bottom: 12px;
 }
 
-/* 上部：日付スクロール（Otterlife参考） */
+/* ──────────────────────────────
+   ページ内タブ（U-NEXT上部切替を参考に）
+   ────────────────────────────── */
+.segWrap {
+  background: linear-gradient(
+    180deg,
+    rgba(125, 204, 204, 0.14),
+    rgba(125, 204, 204, 0) 88%
+  );
+  border-radius: 16px;
+  padding: 6px 8px 0;
+  box-shadow: var(--shadow-sm);
+}
+.segRow {
+  display: flex;
+  gap: 18px;
+  align-items: flex-end;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+.segRow::-webkit-scrollbar {
+  height: 6px;
+}
+.segRow::-webkit-scrollbar-thumb {
+  background: rgba(91, 194, 220, 0.3);
+  border-radius: 999px;
+}
+
+.segBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: rgba(32, 38, 46, 0.8);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  padding: 10px 2px 8px;
+  position: relative;
+  white-space: nowrap;
+  transition: color var(--transition), transform var(--transition);
+}
+.segBtn:active {
+  transform: translateY(1px);
+}
+.segActive {
+  color: var(--color-primary);
+}
+.segActive::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -9px;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    var(--color-primary),
+    var(--color-primary-70)
+  );
+  border-radius: 2px;
+}
+
+/* ──────────────────────────────
+   日付横スクロール（タブの下）
+   ────────────────────────────── */
 .dateScroller {
   background: linear-gradient(
     180deg,
@@ -74,7 +140,9 @@
   vertical-align: middle;
 }
 
-/* ヒーロー領域：テキスト＋キャラクター */
+/* ──────────────────────────────
+   ヒーロー領域（キャラクター）
+   ────────────────────────────── */
 .heroCard {
   position: relative;
   display: grid;
@@ -110,7 +178,6 @@
   opacity: 0.8;
   font-size: 13px;
 }
-
 .heroCharacter {
   width: 100px;
   height: 100px;
@@ -131,14 +198,16 @@
   }
 }
 
-/* アクティビティカード */
+/* ──────────────────────────────
+   共通カード群（健康指標）
+   ────────────────────────────── */
 .cardGrid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* スマホは2列 */
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 .card {
-  background: var(--color-card);
+  background: #fff;
   border-radius: var(--radius-md);
   padding: 14px;
   text-align: center;
@@ -161,14 +230,14 @@
   letter-spacing: 0.01em;
 }
 
-/* 身体指標セクション */
-
+/* ──────────────────────────────
+   身体指標
+   ────────────────────────────── */
 .sectionTitle {
   margin: 0 0 10px;
   font-size: 16px;
   font-weight: 800;
 }
-
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -195,13 +264,143 @@
   color: var(--color-primary);
 }
 
+/* ──────────────────────────────
+   レポート（ダミーのレイアウト）
+   ────────────────────────────── */
+.reportGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.reportCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 14px 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+.reportHeader {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.reportText {
+  margin: 0 0 12px;
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
+}
+.reportList {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+.fakeChart {
+  height: 120px;
+  width: 100%;
+  border-radius: 12px;
+  background: url("/healthcare_feature2.png") center/contain no-repeat;
+}
+
+/* ──────────────────────────────
+   記事一覧（ダミー）
+   ────────────────────────────── */
+.articleList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.articleItem {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: var(--shadow-sm);
+  color: inherit;
+}
+.thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    rgba(91, 194, 220, 0.24),
+    rgba(125, 204, 204, 0.2)
+  );
+  font-size: 20px;
+}
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.articleTitle {
+  margin: 0;
+  font-weight: 700;
+}
+.articleInfo {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* ──────────────────────────────
+   食事記録（CTA）
+   ────────────────────────────── */
+.mealCard {
+  background: #fff;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.mealText {
+  margin: 0 0 12px;
+  opacity: 0.85;
+}
+.mealButtons {
+  display: flex;
+  gap: 10px;
+}
+.primaryBtn {
+  flex: 1;
+  border: none;
+  cursor: pointer;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    var(--color-primary),
+    var(--color-primary-70)
+  );
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  box-shadow: 0 6px 14px rgba(91, 194, 220, 0.35);
+  transition: transform var(--transition);
+}
+.primaryBtn:active {
+  transform: translateY(1px);
+}
+.outlineBtn {
+  flex: 1;
+  border: 1px solid var(--color-primary-70);
+  background: #fff;
+  color: var(--color-primary);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+
 /* 動きが苦手なユーザー配慮 */
 @media (prefers-reduced-motion: reduce) {
   .heroCharacter {
     animation: none;
   }
   .card,
-  .metricCard {
+  .metricCard,
+  .primaryBtn {
     transition: none;
   }
 }
@@ -209,7 +408,13 @@
 /* ===== Tablet >= 768px ===== */
 @media (min-width: 768px) {
   .dashboard {
-    gap: 24px;
+    gap: 22px;
+  }
+  .segRow {
+    gap: 22px;
+  }
+  .segBtn {
+    font-size: 15px;
   }
   .heroCard {
     grid-template-columns: 1fr 140px;
@@ -227,9 +432,12 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 14px;
   }
+  .reportGrid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-/* ===== Large Tablet >= 1024px（任意） ===== */
+/* ===== Large Tablet >= 1024px ===== */
 @media (min-width: 1024px) {
   .cardGrid {
     grid-template-columns: repeat(4, 1fr);
