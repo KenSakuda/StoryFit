@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "StoryFit",
@@ -19,7 +20,14 @@ export default function RootLayout({
         <div className="appShell">
           {/* 上部ヘッダー（必要最低限。ロゴ等があればここに） */}
           <header className="topHeader" aria-label="アプリヘッダー">
-            <div className="brand">StoryFit</div>
+            {/* <div className="brand">StoryFit</div> */}
+            <Image
+              src="/logo.png"
+              alt="StoryFitロゴ"
+              width={140}
+              height={35}
+              priority
+            />
           </header>
 
           {/* メイン */}
