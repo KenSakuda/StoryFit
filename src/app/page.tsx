@@ -1,10 +1,24 @@
 "use client";
 
+import { useMemo, useState, useRef } from "react";
 import styles from "./page.module.css";
-import { useMemo, useState } from "react";
 
 type DayItem = { label: string; date: string; isToday?: boolean };
 type TabKey = "metrics" | "report" | "articles" | "meal";
+
+type Nutrition = {
+  amount_g: number;
+  kcal: number;
+  protein: number;
+  fat: number;
+  carb: number;
+};
+
+type MealItem = {
+  label: string;
+  portion_size: "S" | "M" | "L";
+  nutrition: Nutrition | null;
+};
 
 /** 直近14日を生成（今日を含む） */
 function useTwoWeeks(): DayItem[] {
@@ -31,6 +45,60 @@ export default function DashboardPage() {
 
   // 上部タブ（今日ページ専用）
   const [tab, setTab] = useState<TabKey>("metrics");
+
+  // ---- 食事記録（画像アップロード＋解析）用の state ----
+  const [mealImageFile, setMealImageFile] = useState<File | null>(null);
+  const [mealPreviewUrl, setMealPreviewUrl] = useState<string | null>(null);
+  const [mealResults, setMealResults] = useState<MealItem[] | null>(null);
+  const [mealLoading, setMealLoading] = useState(false);
+  const [mealError, setMealError] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleSelectMealPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMealImageFile(file);
+    setMealPreviewUrl(URL.createObjectURL(file));
+    setMealResults(null);
+    setMealError(null);
+  };
+
+  const handleOpenCamera = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAnalyzeMeal = async () => {
+    if (!mealImageFile) return;
+    setMealLoading(true);
+    setMealError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("image", mealImageFile);
+
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+      const res = await fetch(`${baseUrl}/api/food/analyze/`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("食事画像の解析に失敗しました");
+      }
+
+      const data = await res.json();
+      setMealResults(data.items as MealItem[]);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMealError(err.message);
+      } else {
+        setMealError("エラーが発生しました");
+      }
+    } finally {
+      setMealLoading(false);
+    }
+  };
 
   return (
     <div className={styles.dashboard}>
@@ -238,10 +306,89 @@ export default function DashboardPage() {
             <p className={styles.mealText}>
               写真を撮って食事を簡単記録。カロリーや栄養素を自動で概算します。
             </p>
+
+            {/* カメラ / 画像選択ボタン */}
             <div className={styles.mealButtons}>
-              <button className={styles.primaryBtn}>カメラで記録</button>
-              <button className={styles.outlineBtn}>手入力</button>
+              <button
+                className={styles.primaryBtn}
+                type="button"
+                onClick={handleOpenCamera}
+              >
+                カメラで記録
+              </button>
+              <button
+                className={styles.outlineBtn}
+                type="button"
+                // TODO: 手入力画面に遷移させる場合はここに処理を記述
+              >
+                手入力
+              </button>
             </div>
+
+            {/* 非表示の file input（スマホではカメラが立ち上がる想定） */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleSelectMealPhoto}
+              style={{ display: "none" }}
+            />
+
+            {/* プレビュー */}
+            {mealPreviewUrl && (
+              <div className={styles.mealPreview}>
+                <p className={styles.mealPreviewLabel}>選択中の写真</p>
+                <img
+                  src={mealPreviewUrl}
+                  alt="食事のプレビュー"
+                  className={styles.mealPreviewImage}
+                />
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={handleAnalyzeMeal}
+                  disabled={mealLoading}
+                >
+                  {mealLoading ? "解析中..." : "この写真から栄養素を推定する"}
+                </button>
+              </div>
+            )}
+
+            {/* エラー表示 */}
+            {mealError && <p className={styles.mealError}>{mealError}</p>}
+
+            {/* 解析結果 */}
+            {mealResults && mealResults.length > 0 && (
+              <div className={styles.mealResultList}>
+                <p className={styles.mealResultTitle}>解析結果</p>
+                {mealResults.map((item, idx) => (
+                  <div key={idx} className={styles.mealResultCard}>
+                    <div className={styles.mealResultHeader}>
+                      <span className={styles.mealResultLabel}>
+                        {item.label}
+                      </span>
+                      <span className={styles.mealResultPortion}>
+                        量：{item.portion_size}
+                      </span>
+                    </div>
+                    {item.nutrition ? (
+                      <ul className={styles.mealNutritionList}>
+                        <li>推定量：{item.nutrition.amount_g} g</li>
+                        <li>カロリー：{item.nutrition.kcal} kcal</li>
+                        <li>タンパク質：{item.nutrition.protein} g</li>
+                        <li>脂質：{item.nutrition.fat} g</li>
+                        <li>炭水化物：{item.nutrition.carb} g</li>
+                      </ul>
+                    ) : (
+                      <p className={styles.mealNoNutrition}>
+                        この料理はまだ栄養データ未登録です。
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}

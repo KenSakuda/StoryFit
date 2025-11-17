@@ -16,11 +16,8 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body>
-        {/* 画面全体ラッパ：下部ナビ分の余白を確保 */}
         <div className="appShell">
-          {/* 上部ヘッダー（必要最低限。ロゴ等があればここに） */}
           <header className="topHeader" aria-label="アプリヘッダー">
-            {/* <div className="brand">StoryFit</div> */}
             <Image
               src="/logo.png"
               alt="StoryFitロゴ"
@@ -30,10 +27,8 @@ export default function RootLayout({
             />
           </header>
 
-          {/* メイン */}
           <main className="mainArea">{children}</main>
 
-          {/* ----- 下部固定タブバー ----- */}
           <nav className="bottomNav" aria-label="メインナビゲーション">
             <Link href="/" className="tabItem" aria-label="今日">
               <span className="tabIcon">📅</span>
